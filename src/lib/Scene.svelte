@@ -1,26 +1,58 @@
 <script lang="ts">
-	import { T, useTask } from '@threlte/core';
+	import { T } from '@threlte/core';
 	import { interactivity, OrbitControls } from '@threlte/extras';
 
-	import Mac from './Mac.svelte';
+	import Room from './Room.svelte';
+
+	let { cameraMode }: { cameraMode: 'overview' | 'screen' } = $props();
+
+	const classroomTarget = [0, 1, 0] as const;
+	const screenTarget = [-2.98, 0.68, 1.9] as const;
 
 	interactivity();
 </script>
 
-<T.DirectionalLight castShadow position={[0, 20, 20]} />
+<T.DirectionalLight castShadow position={[30, 30, 30]} />
 
-<T.PerspectiveCamera
-	makeDefault
-	position={[10, 10, 10]}
-	oncreate={(ref) => {
-		ref.lookAt(0, 1, 0);
-	}}
-	zoom={1}
-/>
+{#if cameraMode === 'overview'}
+	<T.OrthographicCamera
+		makeDefault
+		position={[8, 7, 8]}
+		zoom={85}
+		near={0.1}
+		far={100}
+		oncreate={(ref) => {
+			ref.lookAt(...classroomTarget);
+		}}
+	>
+		<OrbitControls
+			enableDamping
+			target={[...classroomTarget]}
+			minDistance={0.55}
+			maxDistance={18}
+		/>
+	</T.OrthographicCamera>
+{:else}
+	<T.PerspectiveCamera
+		makeDefault
+		position={[-2.98, 0.72, 3.25]}
+		fov={36}
+		near={0.1}
+		far={100}
+		oncreate={(ref) => {
+			ref.lookAt(...screenTarget);
+		}}
+	>
+		<OrbitControls
+			enableDamping
+			target={[...screenTarget]}
+			minDistance={0.55}
+			maxDistance={18}
+		/>
+	</T.PerspectiveCamera>
+{/if}
 
-<OrbitControls />
-
-<Mac castShadow position={[0, 0.2, 0]} />
+<Room />
 
 <T.Mesh rotation.x={-Math.PI / 2} receiveShadow>
 	<T.CircleGeometry args={[4, 40]} />

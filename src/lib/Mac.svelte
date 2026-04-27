@@ -18,7 +18,7 @@ Command: npx @threlte/gltf@3.0.7 ./models/macintosh.glb --transform --types -o .
     ...props
   }: Props<THREE.Group> & {
     ref?: THREE.Group
-    children?: Snippet<[{ ref: THREE.Group }]>
+    children?: Snippet<[{ ref: THREE.Group | undefined }]>
     fallback?: Snippet
     error?: Snippet<[{ error: Error }]>
   } = $props()
@@ -31,7 +31,7 @@ Command: npx @threlte/gltf@3.0.7 ./models/macintosh.glb --transform --types -o .
       keys: THREE.Mesh
     }
     materials: {
-      surface: THREE.MeshStandardMaterial
+      surface_1: THREE.MeshStandardMaterial
       screen: THREE.MeshPhysicalMaterial
       surface: THREE.MeshStandardMaterial
       key: THREE.MeshStandardMaterial
