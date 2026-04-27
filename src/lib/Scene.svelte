@@ -1,18 +1,13 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
-	import { interactivity } from '@threlte/extras';
+	import { interactivity, OrbitControls } from '@threlte/extras';
 
 	import Mac from './Mac.svelte';
 
 	interactivity();
-
-	let rotation = $state(0);
-	useTask((delta) => {
-		rotation += delta * 0.5;
-	});
 </script>
 
-<T.DirectionalLight position={[0, 10, 10]} />
+<T.DirectionalLight castShadow position={[0, 20, 20]} />
 
 <T.PerspectiveCamera
 	makeDefault
@@ -20,7 +15,14 @@
 	oncreate={(ref) => {
 		ref.lookAt(0, 1, 0);
 	}}
-	zoom={5}
+	zoom={1}
 />
 
-<Mac rotation.y={rotation} />
+<OrbitControls />
+
+<Mac castShadow position={[0, 0.2, 0]} />
+
+<T.Mesh rotation.x={-Math.PI / 2} receiveShadow>
+	<T.CircleGeometry args={[4, 40]} />
+	<T.MeshStandardMaterial color="white" />
+</T.Mesh>
