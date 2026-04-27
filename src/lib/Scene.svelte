@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
 	import { interactivity } from '@threlte/extras';
+	import { PressedKeys } from 'runed';
 	import { MathUtils, OrthographicCamera, Vector3 } from 'three';
 
 	import Room from './Room.svelte';
@@ -27,8 +28,49 @@
 	} satisfies Record<'overview' | 'screen', CameraShot>;
 
 	let camera = $state.raw<OrthographicCamera>();
+	const keys = new PressedKeys();
+
 	const lookAtTarget = new Vector3().copy(shots.overview.target);
 	const activeShot = $derived(shots[cameraMode]);
+	const showArcadeControls = $derived(cameraMode === 'screen');
+
+	const handledKeys = new Set([
+		'w',
+		'a',
+		's',
+		'd',
+		'arrowup',
+		'arrowleft',
+		'arrowdown',
+		'arrowright'
+	]);
+
+	const clampAxis = (negativeKey: string, positiveKey: string) => {
+		return (keys.has(positiveKey) ? 1 : 0) - (keys.has(negativeKey) ? 1 : 0);
+	};
+	const leftStick = $derived(
+		cameraMode === 'screen'
+			? {
+					x: clampAxis('a', 'd'),
+					z: clampAxis('w', 's')
+				}
+			: { x: 0, z: 0 }
+	);
+	const rightStick = $derived(
+		cameraMode === 'screen'
+			? {
+					x: clampAxis('ArrowLeft', 'ArrowRight'),
+					z: clampAxis('ArrowUp', 'ArrowDown')
+				}
+			: { x: 0, z: 0 }
+	);
+
+	const handleKeydown = (event: KeyboardEvent) => {
+		const key = event.key.toLowerCase();
+		if (!handledKeys.has(key)) return;
+
+		event.preventDefault();
+	};
 
 	interactivity();
 
@@ -44,6 +86,8 @@
 		camera.updateProjectionMatrix();
 	});
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <T.AmbientLight intensity={1.1} />
 <T.HemisphereLight intensity={1.7} color="#f8f1df" groundColor="#5b6472" />
@@ -63,3 +107,25 @@
 />
 
 <Room />
+
+{#snippet ArcadeStick(x: number, z: number)}
+	<T.Group rotation.x={z * 0.62} rotation.z={-x * 0.62}>
+		<T.Mesh position.y={0.18} rotation.x={Math.PI / 2}>
+			<T.CylinderGeometry args={[0.03, 0.03, 0.38, 12]} />
+			<T.MeshStandardMaterial color="#b7b4ac" roughness={0.45} metalness={0.35} />
+		</T.Mesh>
+		<T.Mesh position.y={0.4}>
+			<T.SphereGeometry args={[0.11, 18, 18]} />
+			<T.MeshStandardMaterial color="#ff5b62" roughness={0.25} />
+		</T.Mesh>
+	</T.Group>
+{/snippet}
+
+<T.Group visible={showArcadeControls}>
+	<T.Group position={[-5.42, 1.62, 0.53]} rotation.y={-0.18}>
+		{@render ArcadeStick(leftStick.x, leftStick.z)}
+	</T.Group>
+	<T.Group position={[-4.74, 1.62, 0.53]} rotation.y={-0.18}>
+		{@render ArcadeStick(rightStick.x, rightStick.z)}
+	</T.Group>
+</T.Group>

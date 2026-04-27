@@ -41,6 +41,7 @@
 		"@threlte/rapier": "^3.4.2",
 		"@threlte/theatre": "^3.2.2",
 		"@types/three": "^0.183.1",
+		"runed": "^0.37.1",
 		"three": "^0.183.2"
 	}
 }
