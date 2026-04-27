@@ -15,6 +15,10 @@
 		target: Vector3;
 		zoom: number;
 	};
+	type StickInput = {
+		x: number;
+		z: number;
+	};
 
 	const shots = {
 		overview: {
@@ -71,6 +75,14 @@
 				}
 			: { x: 0, z: 0 }
 	);
+	const leftViewedStick = $derived({
+		x: leftStick.z,
+		z: -leftStick.x
+	});
+	const rightViewedStick = $derived({
+		x: rightStick.z,
+		z: -rightStick.x
+	});
 
 	const handleKeydown = (event: KeyboardEvent) => {
 		const key = event.key.toLowerCase();
@@ -102,16 +114,16 @@
 		camera.updateProjectionMatrix();
 
 		const stickEase = 1 - Math.exp(-delta * 12);
-		const animateJoystick = (joystick: Group | undefined, x: number, z: number) => {
+		const animateJoystick = (joystick: Group | undefined, input: StickInput) => {
 			if (!joystick) return;
 
-			joystick.rotation.x = MathUtils.lerp(joystick.rotation.x, z * 0.5, stickEase);
-			joystick.rotation.y = MathUtils.lerp(joystick.rotation.y, -x * 0.5, stickEase);
+			joystick.rotation.x = MathUtils.lerp(joystick.rotation.x, input.z * 0.5, stickEase);
+			joystick.rotation.y = MathUtils.lerp(joystick.rotation.y, -input.x * 0.5, stickEase);
 			joystick.rotation.z = MathUtils.lerp(joystick.rotation.z, -0.26, stickEase);
 		};
 
-		animateJoystick(leftJoystick, leftStick.x, leftStick.z);
-		animateJoystick(rightJoystick, rightStick.x, rightStick.z);
+		animateJoystick(leftJoystick, leftViewedStick);
+		animateJoystick(rightJoystick, rightViewedStick);
 	});
 </script>
 
