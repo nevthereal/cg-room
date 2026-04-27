@@ -7,18 +7,20 @@
 	let { cameraMode }: { cameraMode: 'overview' | 'screen' } = $props();
 
 	const classroomTarget = [0, 1, 0] as const;
-	const screenTarget = [-2.98, 0.68, 1.9] as const;
+	const screenTarget = [-5.05, 2.55, 0.05] as const;
 
 	interactivity();
 </script>
 
-<T.DirectionalLight castShadow position={[30, 30, 30]} />
+<T.AmbientLight intensity={1.1} />
+<T.HemisphereLight intensity={1.7} color="#f8f1df" groundColor="#5b6472" />
+<T.DirectionalLight castShadow intensity={3.2} position={[10, 12, 8]} />
 
 {#if cameraMode === 'overview'}
 	<T.OrthographicCamera
 		makeDefault
-		position={[8, 7, 8]}
-		zoom={85}
+		position={[8, 6.5, 8]}
+		zoom={70}
 		near={0.1}
 		far={100}
 		oncreate={(ref) => {
@@ -35,8 +37,8 @@
 {:else}
 	<T.PerspectiveCamera
 		makeDefault
-		position={[-2.98, 0.72, 3.25]}
-		fov={36}
+		position={[0.35, 2.75, 4.6]}
+		fov={18}
 		near={0.1}
 		far={100}
 		oncreate={(ref) => {

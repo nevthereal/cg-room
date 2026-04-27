@@ -5,9 +5,11 @@
 	let cameraMode = $state<'overview' | 'screen'>('overview');
 </script>
 
-<Canvas>
-	<Scene {cameraMode} />
-</Canvas>
+<div class="scene-shell">
+	<Canvas>
+		<Scene {cameraMode} />
+	</Canvas>
+</div>
 
 <div class="camera-controls" aria-label="Camera controls">
 	<button
@@ -32,14 +34,22 @@
 		background: #151515;
 	}
 
-	:global(canvas) {
-		display: block;
+	:global(html),
+	:global(body) {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+
+	.scene-shell {
+		width: 100vw;
+		height: 100vh;
 	}
 
 	.camera-controls {
 		position: fixed;
-		top: 1rem;
-		left: 50%;
+		top: 1.25rem;
+		right: 1.25rem;
 		z-index: 10;
 		display: flex;
 		gap: 0.35rem;
@@ -49,7 +59,6 @@
 		background: rgb(16 18 20 / 0.72);
 		box-shadow: 0 12px 36px rgb(0 0 0 / 0.22);
 		backdrop-filter: blur(14px);
-		transform: translateX(-50%);
 	}
 
 	button {
@@ -86,7 +95,6 @@
 		.camera-controls {
 			right: 0.75rem;
 			left: 0.75rem;
-			transform: none;
 		}
 
 		button {
