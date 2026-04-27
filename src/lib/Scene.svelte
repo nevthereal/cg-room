@@ -2,6 +2,7 @@
 	import { T, useTask } from '@threlte/core';
 	import { interactivity } from '@threlte/extras';
 	import { PressedKeys } from 'runed';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { MathUtils, OrthographicCamera, Vector3 } from 'three';
 
 	import Room from './Room.svelte';
@@ -29,6 +30,7 @@
 
 	let camera = $state.raw<OrthographicCamera>();
 	const keys = new PressedKeys();
+	let fallbackKeys = new SvelteSet<string>();
 
 	const lookAtTarget = new Vector3().copy(shots.overview.target);
 	const activeShot = $derived(shots[cameraMode]);
@@ -46,7 +48,10 @@
 	]);
 
 	const clampAxis = (negativeKey: string, positiveKey: string) => {
-		return (keys.has(positiveKey) ? 1 : 0) - (keys.has(negativeKey) ? 1 : 0);
+		return (
+			(keys.has(positiveKey) || fallbackKeys.has(positiveKey) ? 1 : 0) -
+			(keys.has(negativeKey) || fallbackKeys.has(negativeKey) ? 1 : 0)
+		);
 	};
 	const leftStick = $derived(
 		cameraMode === 'screen'
@@ -59,8 +64,8 @@
 	const rightStick = $derived(
 		cameraMode === 'screen'
 			? {
-					x: clampAxis('ArrowLeft', 'ArrowRight'),
-					z: clampAxis('ArrowUp', 'ArrowDown')
+					x: clampAxis('arrowleft', 'arrowright'),
+					z: clampAxis('arrowup', 'arrowdown')
 				}
 			: { x: 0, z: 0 }
 	);
@@ -70,6 +75,15 @@
 		if (!handledKeys.has(key)) return;
 
 		event.preventDefault();
+		fallbackKeys.add(key);
+	};
+
+	const handleKeyup = (event: KeyboardEvent) => {
+		const key = event.key.toLowerCase();
+		if (!handledKeys.has(key)) return;
+
+		event.preventDefault();
+		fallbackKeys.delete(key);
 	};
 
 	interactivity();
@@ -87,7 +101,7 @@
 	});
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} onkeyup={handleKeyup} />
 
 <T.AmbientLight intensity={1.1} />
 <T.HemisphereLight intensity={1.7} color="#f8f1df" groundColor="#5b6472" />
