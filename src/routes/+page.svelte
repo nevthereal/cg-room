@@ -1,57 +1,31 @@
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
 	import Scene from '$lib/Scene.svelte';
-	import { onDestroy } from 'svelte';
 
 	let cameraMode = $state<'overview' | 'screen'>('overview');
-	let requestedCameraMode = $state<'overview' | 'screen'>('overview');
-	let isSwitchingCamera = $state(false);
-	let cameraSwitchTimeout: ReturnType<typeof setTimeout> | undefined;
-	let cameraFadeTimeout: ReturnType<typeof setTimeout> | undefined;
 
 	const switchCamera = (mode: 'overview' | 'screen') => {
-		if (mode === requestedCameraMode) return;
-
-		requestedCameraMode = mode;
-		isSwitchingCamera = true;
-		clearTimeout(cameraSwitchTimeout);
-		clearTimeout(cameraFadeTimeout);
-
-		cameraSwitchTimeout = setTimeout(() => {
-			cameraMode = mode;
-		}, 150);
-
-		cameraFadeTimeout = setTimeout(() => {
-			isSwitchingCamera = false;
-		}, 420);
+		cameraMode = mode;
 	};
-
-	onDestroy(() => {
-		clearTimeout(cameraSwitchTimeout);
-		clearTimeout(cameraFadeTimeout);
-	});
 </script>
 
 <div class="scene-shell">
 	<Canvas>
 		<Scene {cameraMode} />
 	</Canvas>
-	<div class="camera-fade" class:visible={isSwitchingCamera}></div>
 </div>
 
 <div class="camera-controls" aria-label="Camera controls">
 	<button
 		class:active={cameraMode === 'overview'}
 		type="button"
-		disabled={isSwitchingCamera}
 		onclick={() => switchCamera('overview')}
 	>
-		Classroom
+		Whole Room
 	</button>
 	<button
 		class:active={cameraMode === 'screen'}
 		type="button"
-		disabled={isSwitchingCamera}
 		onclick={() => switchCamera('screen')}
 	>
 		Arcade screen
@@ -77,20 +51,6 @@
 		height: 100vh;
 	}
 
-	.camera-fade {
-		position: fixed;
-		inset: 0;
-		z-index: 5;
-		pointer-events: none;
-		background: #101010;
-		opacity: 0;
-		transition: opacity 180ms ease;
-	}
-
-	.camera-fade.visible {
-		opacity: 0.72;
-	}
-
 	.camera-controls {
 		position: fixed;
 		top: 1.25rem;
@@ -113,7 +73,9 @@
 		padding: 0.72rem 1rem;
 		background: transparent;
 		color: rgb(255 255 255 / 0.72);
-		font: 600 0.9rem/1 system-ui, sans-serif;
+		font:
+			600 0.9rem/1 system-ui,
+			sans-serif;
 		cursor: pointer;
 		transition:
 			background 160ms ease,
@@ -134,10 +96,6 @@
 		background: #f8d66d;
 		color: #1a1711;
 		box-shadow: 0 6px 18px rgb(248 214 109 / 0.28);
-	}
-
-	button:disabled {
-		cursor: default;
 	}
 
 	@media (max-width: 520px) {

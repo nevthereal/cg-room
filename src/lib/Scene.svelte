@@ -1,15 +1,48 @@
 <script lang="ts">
-	import { T } from '@threlte/core';
-	import { interactivity, OrbitControls } from '@threlte/extras';
+	import { T, useTask } from '@threlte/core';
+	import { interactivity } from '@threlte/extras';
+	import { MathUtils, OrthographicCamera, Vector3 } from 'three';
 
 	import Room from './Room.svelte';
 
 	let { cameraMode }: { cameraMode: 'overview' | 'screen' } = $props();
 
-	const classroomTarget = [0, 1, 0] as const;
-	const screenTarget = [-5.1, 2.65, 0.05] as const;
+	type CameraShot = {
+		position: Vector3;
+		target: Vector3;
+		zoom: number;
+	};
+
+	const shots = {
+		overview: {
+			position: new Vector3(8, 6.5, 8),
+			target: new Vector3(0, 1, 0),
+			zoom: 36
+		},
+		screen: {
+			position: new Vector3(0.35, 2.75, 4.6),
+			target: new Vector3(-5.1, 2.82, 0.05),
+			zoom: 650
+		}
+	} satisfies Record<'overview' | 'screen', CameraShot>;
+
+	let camera = $state.raw<OrthographicCamera>();
+	const lookAtTarget = new Vector3().copy(shots.overview.target);
+	const activeShot = $derived(shots[cameraMode]);
 
 	interactivity();
+
+	useTask((delta) => {
+		if (!camera) return;
+
+		const ease = 1 - Math.exp(-delta * 3.8);
+
+		camera.position.lerp(activeShot.position, ease);
+		lookAtTarget.lerp(activeShot.target, ease);
+		camera.zoom = MathUtils.lerp(camera.zoom, activeShot.zoom, ease);
+		camera.lookAt(lookAtTarget);
+		camera.updateProjectionMatrix();
+	});
 </script>
 
 <T.AmbientLight intensity={1.1} />
@@ -17,42 +50,16 @@
 <T.DirectionalLight castShadow intensity={3.2} position={[10, 12, 8]} />
 <T.PointLight intensity={7} distance={9} position={[-2.8, 3.2, 3.4]} />
 
-{#if cameraMode === 'overview'}
-	<T.OrthographicCamera
-		makeDefault
-		position={[8, 6.5, 8]}
-		zoom={36}
-		near={0.1}
-		far={100}
-		oncreate={(ref) => {
-			ref.lookAt(...classroomTarget);
-		}}
-	>
-		<OrbitControls
-			enableDamping
-			target={[...classroomTarget]}
-			minDistance={0.55}
-			maxDistance={18}
-		/>
-	</T.OrthographicCamera>
-{:else}
-	<T.PerspectiveCamera
-		makeDefault
-		position={[0.35, 2.75, 4.6]}
-		fov={14}
-		near={0.1}
-		far={100}
-		oncreate={(ref) => {
-			ref.lookAt(...screenTarget);
-		}}
-	>
-		<OrbitControls
-			enableDamping
-			target={[...screenTarget]}
-			minDistance={0.55}
-			maxDistance={18}
-		/>
-	</T.PerspectiveCamera>
-{/if}
+<T.OrthographicCamera
+	makeDefault
+	bind:ref={camera}
+	position={shots.overview.position.toArray()}
+	zoom={shots.overview.zoom}
+	near={0.1}
+	far={100}
+	oncreate={(ref) => {
+		ref.lookAt(shots.overview.target);
+	}}
+/>
 
 <Room />
