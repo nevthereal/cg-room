@@ -36,13 +36,14 @@ Command: npx @threlte/gltf@3.0.7 ./models/room.glb --output ./src/lib/Room.svelt
       Tube_Bottom: THREE.Mesh
       Icosphere: THREE.Mesh
       Icosphere_1: THREE.Mesh
-      Icosphere_2: THREE.Mesh
       Arcade: THREE.Mesh
       Plane006: THREE.Mesh
       Table: THREE.Mesh
       Plane011: THREE.Mesh
       Plane001_1: THREE.Mesh
       Plane001_2: THREE.Mesh
+      Joystick_Left_Base: THREE.Mesh
+      Joystick_Right_Base: THREE.Mesh
       Plane004_1: THREE.Mesh
       Plane004_2: THREE.Mesh
       Plane004_3: THREE.Mesh
@@ -137,13 +138,6 @@ Command: npx @threlte/gltf@3.0.7 ./models/room.glb --output ./src/lib/Room.svelt
           castShadow
           receiveShadow
           geometry={gltf.nodes.Icosphere_1.geometry}
-          material={gltf.materials.PaletteMaterial001}
-        />
-        <T.Mesh
-          name="Icosphere_2"
-          castShadow
-          receiveShadow
-          geometry={gltf.nodes.Icosphere_2.geometry}
           material={gltf.materials.PaletteMaterial002}
         />
       </T.Group>
@@ -166,13 +160,6 @@ Command: npx @threlte/gltf@3.0.7 ./models/room.glb --output ./src/lib/Room.svelt
           castShadow
           receiveShadow
           geometry={gltf.nodes.Icosphere_1.geometry}
-          material={gltf.materials.PaletteMaterial001}
-        />
-        <T.Mesh
-          name="Icosphere_2"
-          castShadow
-          receiveShadow
-          geometry={gltf.nodes.Icosphere_2.geometry}
           material={gltf.materials.PaletteMaterial002}
         />
       </T.Group>
@@ -236,6 +223,26 @@ Command: npx @threlte/gltf@3.0.7 ./models/room.glb --output ./src/lib/Room.svelt
           material={gltf.materials.PaletteMaterial001}
         />
       </T.Group>
+      <T.Mesh
+        name="Joystick_Left_Base"
+        castShadow
+        receiveShadow
+        geometry={gltf.nodes.Joystick_Left_Base.geometry}
+        material={gltf.materials.PaletteMaterial001}
+        position={[-2.4, 2.27, 2.74]}
+        rotation={[0, 0, -0.26]}
+        scale={0.06}
+      />
+      <T.Mesh
+        name="Joystick_Right_Base"
+        castShadow
+        receiveShadow
+        geometry={gltf.nodes.Joystick_Right_Base.geometry}
+        material={gltf.materials.PaletteMaterial001}
+        position={[-2.42, 2.28, 1.96]}
+        rotation={[0, 0, -0.26]}
+        scale={0.06}
+      />
       <T.Group
         name="Plane005"
         position={[-2.98, 0, 1.72]}
