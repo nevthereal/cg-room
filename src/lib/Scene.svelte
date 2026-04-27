@@ -3,7 +3,8 @@
 	import { interactivity } from '@threlte/extras';
 	import { PressedKeys } from 'runed';
 	import { SvelteSet } from 'svelte/reactivity';
-	import { MathUtils, OrthographicCamera, Vector3 } from 'three';
+	import { MathUtils, Vector3 } from 'three';
+	import type { Group, OrthographicCamera } from 'three';
 
 	import Room from './Room.svelte';
 
@@ -29,12 +30,13 @@
 	} satisfies Record<'overview' | 'screen', CameraShot>;
 
 	let camera = $state.raw<OrthographicCamera>();
+	let leftJoystick = $state.raw<Group>();
+	let rightJoystick = $state.raw<Group>();
 	const keys = new PressedKeys();
 	let fallbackKeys = new SvelteSet<string>();
 
 	const lookAtTarget = new Vector3().copy(shots.overview.target);
 	const activeShot = $derived(shots[cameraMode]);
-	const showArcadeControls = $derived(cameraMode === 'screen');
 
 	const handledKeys = new Set([
 		'w',
@@ -98,6 +100,18 @@
 		camera.zoom = MathUtils.lerp(camera.zoom, activeShot.zoom, ease);
 		camera.lookAt(lookAtTarget);
 		camera.updateProjectionMatrix();
+
+		const stickEase = 1 - Math.exp(-delta * 12);
+		const animateJoystick = (joystick: Group | undefined, x: number, z: number) => {
+			if (!joystick) return;
+
+			joystick.rotation.x = MathUtils.lerp(joystick.rotation.x, z * 0.5, stickEase);
+			joystick.rotation.y = MathUtils.lerp(joystick.rotation.y, -x * 0.5, stickEase);
+			joystick.rotation.z = MathUtils.lerp(joystick.rotation.z, -0.26, stickEase);
+		};
+
+		animateJoystick(leftJoystick, leftStick.x, leftStick.z);
+		animateJoystick(rightJoystick, rightStick.x, rightStick.z);
 	});
 </script>
 
@@ -120,26 +134,4 @@
 	}}
 />
 
-<Room />
-
-{#snippet ArcadeStick(x: number, z: number)}
-	<T.Group rotation.x={z * 0.62} rotation.z={-x * 0.62}>
-		<T.Mesh position.y={0.18} rotation.x={Math.PI / 2}>
-			<T.CylinderGeometry args={[0.03, 0.03, 0.38, 12]} />
-			<T.MeshStandardMaterial color="#b7b4ac" roughness={0.45} metalness={0.35} />
-		</T.Mesh>
-		<T.Mesh position.y={0.4}>
-			<T.SphereGeometry args={[0.11, 18, 18]} />
-			<T.MeshStandardMaterial color="#ff5b62" roughness={0.25} />
-		</T.Mesh>
-	</T.Group>
-{/snippet}
-
-<T.Group visible={showArcadeControls}>
-	<T.Group position={[-5.42, 1.62, 0.53]} rotation.y={-0.18}>
-		{@render ArcadeStick(leftStick.x, leftStick.z)}
-	</T.Group>
-	<T.Group position={[-4.74, 1.62, 0.53]} rotation.y={-0.18}>
-		{@render ArcadeStick(rightStick.x, rightStick.z)}
-	</T.Group>
-</T.Group>
+<Room bind:joystickLeftRef={leftJoystick} bind:joystickRightRef={rightJoystick} />
