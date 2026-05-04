@@ -2,6 +2,8 @@
 	import { Canvas } from '@threlte/core';
 	import Scene from '$lib/Scene.svelte';
 
+	// The page only manages the UI state for the camera.
+	// All 3D rendering happens inside Scene.svelte.
 	let cameraMode = $state<'overview' | 'screen'>('overview');
 
 	const switchCamera = (mode: 'overview' | 'screen') => {
@@ -16,6 +18,8 @@
 </div>
 
 <div class="camera-controls" aria-label="Camera controls">
+	<!-- These buttons let the viewer compare the full room composition
+	     with a close study of the arcade machine. -->
 	<button
 		class:active={cameraMode === 'overview'}
 		type="button"

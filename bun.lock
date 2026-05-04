@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "classroom",
+      "name": "computer-graphics-project",
       "dependencies": {
         "@dimforge/rapier3d-compat": "^0.19.3",
         "@theatre/core": "^0.7.2",

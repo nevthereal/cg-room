@@ -10,6 +10,8 @@
 
 	let { cameraMode }: { cameraMode: 'overview' | 'screen' } = $props();
 
+	// Each camera preset defines a position, a point to look at and a zoom level.
+	// The scene interpolates between these presets so camera changes feel smooth.
 	type CameraShot = {
 		position: Vector3;
 		target: Vector3;
@@ -59,6 +61,9 @@
 			(keys.has(negativeKey) || fallbackKeys.has(negativeKey) ? 1 : 0)
 		);
 	};
+
+	// In screen mode, WASD and the arrow keys animate the two joysticks
+	// to make the arcade machine feel active even though no full game runs on it.
 	const leftStick = $derived(
 		cameraMode === 'screen'
 			? {
@@ -105,6 +110,7 @@
 	useTask((delta) => {
 		if (!camera) return;
 
+		// Exponential easing keeps movement frame-rate independent.
 		const ease = 1 - Math.exp(-delta * 3.8);
 
 		camera.position.lerp(activeShot.position, ease);
@@ -129,11 +135,15 @@
 
 <svelte:window onkeydown={handleKeydown} onkeyup={handleKeyup} />
 
+<!-- The lighting combines ambient, hemisphere and direct light
+     so the room stays readable from both camera presets. -->
 <T.AmbientLight intensity={1.1} />
 <T.HemisphereLight intensity={1.7} color="#f8f1df" groundColor="#5b6472" />
 <T.DirectionalLight castShadow intensity={3.2} position={[10, 12, 8]} />
 <T.PointLight intensity={7} distance={9} position={[-2.8, 3.2, 3.4]} />
 
+<!-- Orthographic projection avoids perspective distortion and supports
+     the clean, presentation-like view used in this graphics study. -->
 <T.OrthographicCamera
 	makeDefault
 	bind:ref={camera}
