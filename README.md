@@ -1,67 +1,46 @@
 # Computer Graphics Project
 
-This repository contains a small interactive Computer Graphics project built with SvelteKit, Threlte and Three.js. The application presents a stylised 3D room with an arcade machine and two camera modes:
+Dieses Repository enthält ein interaktives Computer Graphics Projekt, das mit SvelteKit und Threlte (Three.js under the hood) kreiert wurde. Das Projekt ist ein 3D-Modell eines Zimmers mit Retro-Geräten, spezifischer einem Arcade-Automaten und einem Tisch mit Fernseher und einer Art Atari. Im Menu des Web UIs kann man zwischen folgenden Perspektiven wechseln:
 
-- `Whole Room`: shows the complete scene composition
-- `Arcade screen`: zooms in to the arcade area and lets the user animate the joysticks with the keyboard
+- `Whole Room`: zeigt die gesamte Komposition
+- `Arcade screen`: zoomt zum Bildschirm des Arcade. Von hier aus kann man die Joysticks kontrollieren
 
-## Purpose of the project
+## Lernziele
 
-The goal of the project is to demonstrate core computer graphics ideas in a web application:
+Das Ziel des Projekt war es, ein in Blender selbst modelliertes low-poly Modell im Web Interaktiv zu machen. Dieses low-poly Modell wurde als GLB-File exportiert und mit Kameras und ein paar Lichtern zum Leben erweckt. Die Joysticks des Arcade-Automaten wurden auch programmatisch animiert. Die ganze Szene wäre rein theoretisch sehr "reusable" und "composable", da die Modelle und Teile der Szene in mehrheitlich separaten Komponenten leben.
 
-- loading and displaying a 3D scene from a GLB model
-- combining multiple light sources for a readable scene
-- switching between predefined camera shots
-- animating parts of a 3D model through user input
-- structuring a graphics scene with reusable Svelte components
+## Tech-Stack
 
-## Technology stack
+Für die Vervollständigung wurden folgende Technologien angewendet.
 
-- `SvelteKit` for the web application structure
-- `Threlte` as the Svelte-first Three.js integration
-- `Three.js` for 3D rendering primitives such as vectors, cameras and lighting
-- `TypeScript` for typed scene logic
+- `Svelte` (https://svelte.dev), eine Templating-Sprache, die es erlaubt, HTML und TypeScript sehr nah aneinander zu schreiben. SvelteKit stellt ein Meta-Framework dar, das für die Web-Applikations Struktur benutzt wurde, da ich mich da bereits gut auskenne und man sehr einfach eine Web-App entwickeln und auch auf Vercel (https://vercel.com) deployen kann.
+- `Threlte` (https://threlte.xyz) als die Verbindungsebene zwischen Svelte und Three.js
+- `Three.js` (https://threejs.org) viele 3D-primitives für das Web, basierend auf WebGL.
+- `TypeScript`, ein Superset für JavaScript mit statischen Typen. Sehr praktisch für diese Art von Development
 
-## Project structure
+## Projectstruktur
 
-- [src/routes/+page.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/routes/+page.svelte): page-level UI and camera mode buttons
-- [src/lib/Scene.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/lib/Scene.svelte): main 3D scene logic, lights, camera transitions and joystick animation
-- [src/lib/Room.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/lib/Room.svelte): typed GLB room model imported as a Threlte component
-- [src/lib/Camera.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/lib/Camera.svelte): currently unused helper component from an earlier iteration
-- `static/room-transformed.glb`: optimised room model used by the application
-- `models/room.glb`: source model export used to generate the room component
+- [src/routes/+page.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/routes/+page.svelte): page-level UI und Kamera-Modus Buttons.
+- [src/lib/Scene.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/lib/Scene.svelte): 3D Szene, sowie die Kamera und Joystick-Logik
+- [src/lib/Room.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/lib/Room.svelte): Auto-generierter Svelte-Component aus dem GLB Modell
+- `static/room-transformed.glb`: optimisertes 3D-Modell, generiert von dem CLI
+- `models/room.glb`: exportiertes 3D-Modell aus Blender
 
-## Interaction
+## Interaktion
 
-- Use the buttons in the top-right corner to switch camera modes.
-- In `Arcade screen` mode, use `W`, `A`, `S`, `D` and the arrow keys to animate the joysticks.
+Die Buttons oben rechts dienen dazu, zwischen den zwei Kamera-Modi (oder Perspektiven) zu wechseln. Damit das 3D-Modell angemessen gross ist, muss man im browser unter umständen rein- oder rauszoomen. Wenn man sich im `Arcade screen`-Modus befindet, kann man mit `W`, `A`, `S` und `D` den linken Joystick bedienen und mit den Pfeiltasten den rechten.
 
-## Notes on the implementation
+## Bemerkungen zur Implementierung
 
-- The room geometry is imported from Blender as a `.glb` file and then converted into a typed Svelte component.
-- The camera uses smooth interpolation instead of instant jumps so transitions feel more polished.
-- An orthographic camera is used to keep the composition clean and to reduce perspective distortion.
-- The joystick movement is a local animation effect and is not connected to a full arcade game.
+Der Raum wurde in Blender modelliert und als `.glb`-Datei exportiert, mit dem CLI von Threlte dann in einen typisierten Component umgewandelt. Die Kamera-Übergänge nutzen Interpolation anstatt plötzlichen Jumps, damit sich diese smoother anfühlen. Es wurde absichtlich eine orthographische Kamera, anstelle einer perspektivischen Kamera gewählt, um den Low-Poly-Vibe beizubehalten. 
 
-## AI and declaration of "independance"
+## KI und Eigenständigkeitserklärung
 
-AI was used inside of this project to implement stuff like easing and creating the camera transition (GPT-5.5 inside of Codex). The 3D Model was done entirely by myself, in inspiration of this video: https://youtu.be/NbyGOfWz0yI?si=c2HiwvQ06kRe2g8o.
+KI wurde für die Implementierung der Kamera-Transition und der Animation der Joysticks benutzt. Genauer gesagt GPT-5.5 in der Codex-App von OpenAI. Das 3D-Modell wurde komplett von mir selber modelliert, um Blender zu "wiedererlernen" habe ich mich auf dieses Video bezogen: https://youtu.be/NbyGOfWz0yI?si=c2HiwvQ06kRe2g8o.
 
-## Run the project
+## Sonstiges
 
-The project is hosted under https://cg.nevthe.dev. To run the project locally:
+Das Projekt ist live unter https://cg.nevthe.dev. Wenn Node.js (https://nodejs.org/en) und Bun (https://bun.sh) installiert sind, kann man das Projekt folgendermassen lokal betrachten:
 
-Install dependencies and start the development server:
-
-```sh
-bun install
-bun run dev
-```
-
-Useful scripts:
-
-```sh
-bun run check
-bun run lint
-bun run build
-```
+1. Die Dependencies installieren mit `bun install`
+2. Den Dev-Server starten mit `bun run dev`
