@@ -80,15 +80,14 @@
 				}
 			: { x: 0, z: 0 }
 	);
-	const leftViewedStick = $derived({
+	const leftScreenStick = $derived({
 		x: leftStick.z,
 		z: -leftStick.x
 	});
-	const rightViewedStick = $derived({
+	const rightScreenStick = $derived({
 		x: rightStick.z,
 		z: -rightStick.x
 	});
-
 	const handleKeydown = (event: KeyboardEvent) => {
 		const key = event.key.toLowerCase();
 		if (!handledKeys.has(key)) return;
@@ -124,12 +123,12 @@
 			if (!joystick) return;
 
 			joystick.rotation.x = MathUtils.lerp(joystick.rotation.x, input.z * 0.5, stickEase);
-			joystick.rotation.y = MathUtils.lerp(joystick.rotation.y, -input.x * 0.5, stickEase);
-			joystick.rotation.z = MathUtils.lerp(joystick.rotation.z, -0.26, stickEase);
+			joystick.rotation.y = MathUtils.lerp(joystick.rotation.y, 0, stickEase);
+			joystick.rotation.z = MathUtils.lerp(joystick.rotation.z, -0.26 - input.x * 0.5, stickEase);
 		};
 
-		animateJoystick(leftJoystick, leftViewedStick);
-		animateJoystick(rightJoystick, rightViewedStick);
+		animateJoystick(leftJoystick, leftScreenStick);
+		animateJoystick(rightJoystick, rightScreenStick);
 	});
 </script>
 
