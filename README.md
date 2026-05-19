@@ -13,10 +13,84 @@ Das Ziel des Projekt war es, ein in Blender selbst modelliertes low-poly Modell 
 
 Für die Vervollständigung wurden folgende Technologien angewendet.
 
-- `Svelte` (https://svelte.dev), eine Templating-Sprache, die es erlaubt, HTML und TypeScript sehr nah aneinander zu schreiben. SvelteKit stellt ein Meta-Framework dar, das für die Web-Applikations Struktur benutzt wurde, da ich mich da bereits gut auskenne und man sehr einfach eine Web-App entwickeln und auch auf Vercel (https://vercel.com) deployen kann.
-- `Threlte` (https://threlte.xyz) als die Verbindungsebene zwischen Svelte und Three.js
-- `Three.js` (https://threejs.org) viele 3D-primitives für das Web, basierend auf WebGL.
-- `TypeScript`, ein Superset für JavaScript mit statischen Typen. Sehr praktisch für diese Art von Development
+### Svelte
+[Svelte](https://svelte.dev) ist eine Templating-Sprache, die es erlaubt, HTML und TypeScript sehr nah aneinander zu schreiben. SvelteKit stellt ein Meta-Framework dar, das für die Web-Applikations Struktur benutzt wurde, da ich mich da bereits gut auskenne und man sehr einfach eine Web-App entwickeln und auch auf Vercel (https://vercel.com) deployen kann. Svelte benutzt einen Compiler, um sogenannte Svelte-Komponenten, wie diesen (den ich schamlos aus der Dokumentation geklaut habe):
+```svelte
+<script lang="ts">
+	function greet() {
+		alert('Welcome to Svelte!');
+	}
+</script>
+
+<button onclick={greet}>click me</button>
+
+<style>
+	button {
+		font-size: 2em;
+	}
+</style>
+```
+
+in optimisiertes JavaScript kompiliert.
+
+### Three.js
+[Three.js](https://threejs.org) ist eine JavaScript-Library, die viele 3D-primitives für das Web, basierend auf WebGL mitbringt. Man kann mit Three.js 3D Grafiken direkt im Browser darstellen. Man muss also kein WebGL schreiben können, um komplexe Szenen auf einer Website abbilden zu können. Three.js ist bekannt für seinen imperativen JS-Style, was meiner Meinung nach etwas zu kompliziert ist (aber auch durchaus sinn macht, wenn man three.js in einer Vanilla-JS Seite nutzen will), die nächste Library erleichtert mir den Umgang mit Three.js stark und fördert auch die Integration mit Svelte.
+
+### Threlte
+[Threlte](https://threlte.xyz) dient als die Verbindungsebene zwischen Svelte und Three.js. Er macht die imperativen Bindings von Three.js deklarativ und reaktiv, was optimal ist, da ich somit Interaktionen und Animationen in meine Szene einbringen kann. Threlte stellt auch die CLI zur Verfügung, mit der ich die `.glb`-Datei von Blender in einen Component umwandeln konnte. Hier ein Beispiel einer Three.js-Szene:
+```js
+import * as THREE from 'three'
+
+const scene = new THREE.Scene()
+
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+)
+camera.position.z = 3
+
+const renderer = new THREE.WebGLRenderer()
+renderer.setSize(window.innerWidth, window.innerHeight)
+document.body.appendChild(renderer.domElement)
+
+const geometry = new THREE.BoxGeometry(1, 1, 1)
+const material = new THREE.MeshBasicMaterial({ color: 'hotpink' })
+const cube = new THREE.Mesh(geometry, material)
+
+scene.add(cube)
+
+function animate() {
+  cube.rotation.y += 0.01
+  renderer.render(scene, camera)
+  requestAnimationFrame(animate)
+}
+
+animate()
+```
+, die deklarativ und reaktiv mit Threlte folgendermassen verfasst werden kann:
+```svelte
+<script>
+  import { Canvas, T } from '@threlte/core'
+  import { useTask } from '@threlte/core'
+
+  let rotationY = 0
+
+  useTask(() => {
+    rotationY += 0.01
+  })
+</script>
+
+<Canvas>
+  <T.PerspectiveCamera position={[0, 0, 3]} />
+
+  <T.Mesh rotation.y={rotationY}>
+    <T.BoxGeometry args={[1, 1, 1]} />
+    <T.MeshBasicMaterial color="hotpink" />
+  </T.Mesh>
+</Canvas>
+```
 
 ## Projectstruktur
 
@@ -30,13 +104,11 @@ Für die Vervollständigung wurden folgende Technologien angewendet.
 
 Die Buttons oben rechts dienen dazu, zwischen den zwei Kamera-Modi (oder Perspektiven) zu wechseln. Damit das 3D-Modell angemessen gross ist, muss man im browser unter umständen rein- oder rauszoomen. Wenn man sich im `Arcade screen`-Modus befindet, kann man mit `W`, `A`, `S` und `D` den linken Joystick bedienen und mit den Pfeiltasten den rechten.
 
-## Bemerkungen zur Implementierung
+Das Easter Egg besteht darin, dass wenn man wie beim Internet-Trend 6-7 die Tasten W und ArrowUp spamt, ein popup erscheint.
 
-Der Raum wurde in Blender modelliert und als `.glb`-Datei exportiert, mit dem CLI von Threlte dann in einen typisierten Component umgewandelt. Die Kamera-Übergänge nutzen Interpolation anstatt plötzlichen Jumps, damit sich diese smoother anfühlen. Es wurde absichtlich eine orthographische Kamera, anstelle einer perspektivischen Kamera gewählt, um den Low-Poly-Vibe beizubehalten. 
+## Arbeitsprozess
 
-## KI und Eigenständigkeitserklärung
-
-KI wurde für die Implementierung der Kamera-Transition und der Animation der Joysticks benutzt. Genauer gesagt GPT-5.5 in der Codex-App von OpenAI. Das 3D-Modell wurde komplett von mir selber modelliert, um Blender zu "wiedererlernen" habe ich mich auf dieses Video bezogen: https://youtu.be/NbyGOfWz0yI?si=c2HiwvQ06kRe2g8o.
+Der Raum wurde in Blender modelliert [nach diesem Video](https://youtu.be/NbyGOfWz0yI?si=c2HiwvQ06kRe2g8o) und als `.glb`-Datei exportiert, mit der CLI von Threlte dann in einen typisierten Component umgewandelt. Dieser typisierte Component erlaubt es mir, einzelne Elemente des Modells anzusteuern. Die Kamera-Übergänge nutzen Interpolation anstatt plötzlichen Jumps, damit sich diese smoother anfühlen. Es wurde absichtlich eine orthographische Kamera, anstelle einer perspektivischen Kamera gewählt, um den Low-Poly-Vibe beizubehalten. Für den Kameraübergang wurde GPT-5.5 verwendet, da ich mich noch nicht so ganz mit der Logik auskannte. Schlussendlich habe ich den Mechanismus mit dem Easter-Egg implementiert.
 
 ## Sonstiges
 

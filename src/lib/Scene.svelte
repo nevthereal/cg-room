@@ -8,7 +8,13 @@
 
 	import Room from './Room.svelte';
 
-	let { cameraMode }: { cameraMode: 'overview' | 'screen' } = $props();
+	let {
+		cameraMode,
+		onEasterEgg
+	}: {
+		cameraMode: 'overview' | 'screen';
+		onEasterEgg?: () => void;
+	} = $props();
 
 	// Each camera preset defines a position, a point to look at and a zoom level.
 	// The scene interpolates between these presets so camera changes feel smooth.
@@ -54,6 +60,9 @@
 		'arrowdown',
 		'arrowright'
 	]);
+	const easterEggSequence = ['w', 'arrowup', 'w', 'arrowup', 'w', 'arrowup'];
+	let recentJoystickMoves: string[] = [];
+	let easterEggFound = false;
 
 	const clampAxis = (negativeKey: string, positiveKey: string) => {
 		return (
@@ -94,6 +103,14 @@
 
 		event.preventDefault();
 		fallbackKeys.add(key);
+
+		if (cameraMode !== 'screen' || easterEggFound || event.repeat) return;
+
+		recentJoystickMoves = [...recentJoystickMoves, key].slice(-easterEggSequence.length);
+		if (recentJoystickMoves.join(',') === easterEggSequence.join(',')) {
+			easterEggFound = true;
+			onEasterEgg?.();
+		}
 	};
 
 	const handleKeyup = (event: KeyboardEvent) => {
