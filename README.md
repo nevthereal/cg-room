@@ -94,11 +94,9 @@ animate()
 
 ## Projectstruktur
 
-- [src/routes/+page.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/routes/+page.svelte): page-level UI und Kamera-Modus Buttons.
-- [src/lib/Scene.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/lib/Scene.svelte): 3D Szene, sowie die Kamera und Joystick-Logik
-- [src/lib/Room.svelte](/Users/nevillebrem/Developer/Schule/EF/cg/classroom/src/lib/Room.svelte): Auto-generierter Svelte-Component aus dem GLB Modell
-- `static/room-transformed.glb`: optimisertes 3D-Modell, generiert von dem CLI
-- `models/room.glb`: exportiertes 3D-Modell aus Blender
+- [src/routes/+page.svelte](src/routes/+page.svelte): page-level UI und Kamera-Modus Buttons das ist schlussendlich der spezielle Svelte Component, der zum root route "/" matcht.
+- [src/lib/Scene.svelte](src/lib/Scene.svelte): 3D Szene, sowie die Kamera und Joystick-Logik
+- [src/lib/Room.svelte](src/lib/Room.svelte): Auto-generierter Svelte-Component aus dem GLB Modell
 
 ## Interaktion
 

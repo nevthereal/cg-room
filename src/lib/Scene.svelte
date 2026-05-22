@@ -8,6 +8,7 @@
 
 	import Room from './Room.svelte';
 
+	// Component props
 	let {
 		cameraMode,
 		onEasterEgg
@@ -123,6 +124,7 @@
 
 	interactivity();
 
+	// Function that runs continuously
 	useTask((delta) => {
 		if (!camera) return;
 
@@ -172,4 +174,5 @@
 	}}
 />
 
+<!-- Bindings let me control in-component-logic from the outside -->
 <Room bind:joystickLeftRef={leftJoystick} bind:joystickRightRef={rightJoystick} />

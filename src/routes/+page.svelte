@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
 	import Scene from '$lib/Scene.svelte';
+	import { fade } from 'svelte/transition';
 
 	// The page only manages the UI state for the camera.
 	// All 3D rendering happens inside Scene.svelte.
@@ -48,7 +49,12 @@
 </div>
 
 {#if showEasterEgg}
-	<div class="easter-egg-backdrop" role="presentation" onclick={closeEasterEggFromBackdrop}>
+	<div
+		class="easter-egg-backdrop"
+		role="presentation"
+		transition:fade
+		onclick={closeEasterEggFromBackdrop}
+	>
 		<div
 			class="easter-egg-popup"
 			role="dialog"
@@ -56,7 +62,12 @@
 			aria-labelledby="easter-egg-title"
 			tabindex="-1"
 		>
-			<button class="close-button" type="button" aria-label="Close" onclick={() => (showEasterEgg = false)}>
+			<button
+				class="close-button"
+				type="button"
+				aria-label="Close"
+				onclick={() => (showEasterEgg = false)}
+			>
 				&times;
 			</button>
 			<h2 id="easter-egg-title">Bravo, du hast das 67 Easter Egg gefunden.</h2>
