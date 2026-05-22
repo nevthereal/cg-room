@@ -92,6 +92,9 @@ animate()
 </Canvas>
 ```
 
+### Runed
+[Runed](https://runed.dev) ist eine Svelte-spezifische Library, die nützliche Funktionen beinhaltet, in diesem Fall nutze ich die `PressedKeys` Klasse, um die Tasten aufzunehmen.
+
 ## Projectstruktur
 
 - [src/routes/+page.svelte](src/routes/+page.svelte): page-level UI und Kamera-Modus Buttons das ist schlussendlich der spezielle Svelte Component, der zum root route "/" matcht.
@@ -107,6 +110,8 @@ Das Easter Egg besteht darin, dass wenn man wie beim Internet-Trend 6-7 die Tast
 ## Arbeitsprozess
 
 Der Raum wurde in Blender modelliert [nach diesem Video](https://youtu.be/NbyGOfWz0yI?si=c2HiwvQ06kRe2g8o) und als `.glb`-Datei exportiert, mit der CLI von Threlte dann in einen typisierten Component umgewandelt. Dieser typisierte Component erlaubt es mir, einzelne Elemente des Modells anzusteuern. Die Kamera-Übergänge nutzen Interpolation anstatt plötzlichen Jumps, damit sich diese smoother anfühlen. Es wurde absichtlich eine orthographische Kamera, anstelle einer perspektivischen Kamera gewählt, um den Low-Poly-Vibe beizubehalten. Für den Kameraübergang wurde GPT-5.5 verwendet, da ich mich noch nicht so ganz mit der Logik auskannte. Schlussendlich habe ich den Mechanismus mit dem Easter-Egg implementiert.
+
+Im Verlaufe dieses Projekts habe ich mich vor allem mit Blender wieder sehr vertraut gemacht. Das Video hat dabei sehr geholfen, denn jetzt weiss ich sehr genau, wie man beispielsweise Extrudes macht, wie sich die Modes unterscheiden und wie man Materialien an Objekte anfügt. Erfahrung in Svelte hatte ich bereits vorher, jedoch habe ich noch nie mit Three.js bzw. anderen 3D Tools im Web gearbeitet, das war also ganz neu. Stolpersteine dabei waren sicher die Positionierung der Kameras bzw. das generelle Herumtüfteln im 3D-Space, an das ich mich aus einer Programmier-Perspektive nicht gewohnt war. Schliesslich machte die implementierung des Easter Eggs sehr spass, als quasi Cherry on Top.
 
 ## Sonstiges
 

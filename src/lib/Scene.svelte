@@ -45,11 +45,23 @@
 	let camera = $state.raw<OrthographicCamera>();
 	let leftJoystick = $state.raw<Group>();
 	let rightJoystick = $state.raw<Group>();
+	let viewportWidth = $state(1280);
+	let viewportHeight = $state(720);
+
+	// Detector for pressed keys
 	const keys = new PressedKeys();
 	let fallbackKeys = new SvelteSet<string>();
 
 	const lookAtTarget = new Vector3().copy(shots.overview.target);
 	const activeShot = $derived(shots[cameraMode]);
+	const viewportAspect = $derived(viewportWidth / Math.max(viewportHeight, 1));
+	const responsiveZoom = $derived.by(() => {
+		// Keep orthographic framing visually tight as aspect ratios change.
+		const zoomScale = MathUtils.clamp(viewportAspect / (16 / 9), 0.74, 1.22);
+		const modeScale = cameraMode === 'screen' ? MathUtils.lerp(1, zoomScale, 0.62) : zoomScale;
+
+		return activeShot.zoom * modeScale;
+	});
 
 	const handledKeys = new Set([
 		'w',
@@ -133,7 +145,7 @@
 
 		camera.position.lerp(activeShot.position, ease);
 		lookAtTarget.lerp(activeShot.target, ease);
-		camera.zoom = MathUtils.lerp(camera.zoom, activeShot.zoom, ease);
+		camera.zoom = MathUtils.lerp(camera.zoom, responsiveZoom, ease);
 		camera.lookAt(lookAtTarget);
 		camera.updateProjectionMatrix();
 
@@ -151,7 +163,12 @@
 	});
 </script>
 
-<svelte:window onkeydown={handleKeydown} onkeyup={handleKeyup} />
+<svelte:window
+	bind:innerWidth={viewportWidth}
+	bind:innerHeight={viewportHeight}
+	onkeydown={handleKeydown}
+	onkeyup={handleKeyup}
+/>
 
 <!-- The lighting combines ambient, hemisphere and direct light
      so the room stays readable from both camera presets. -->
